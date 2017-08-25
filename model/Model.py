@@ -10,6 +10,7 @@ import warnings
 from network import Network
 from Optimizers import RMSPropOptimizer
 from utils import HomogeneousData
+from utils import TheanoFunctionWrapper as TFW
 from sklearn.cross_validation import KFold
 
 class Trainer:
@@ -271,10 +272,14 @@ class Model:
       prev_samples = [[]] * 1
       prev_scores = numpy.zeros(1).astype('float32')
 
-      init = f_init(ctx0)
-      ctx0 = init[0]
-      next_state = [init[1]]
-      next_memory = [init[2]]
+      # init = f_init(ctx0)
+      # ctx0 = init[0]
+      # next_state = [init[1]]
+      # next_memory = [init[2]]
+      init_results = f_init(ctx0)
+      ctx0 = init_results['context']
+      next_state = [init_results['state']]
+      next_memory = [init_results['memory']]
 
       # reminder: if next_w = -1, the switch statement
       # in build_sampler is triggered -> (empty word embeddings)
@@ -282,13 +287,16 @@ class Model:
 
       for ii in xrange(maxlen):
          # our "next" state/memory in our previous step is now our "initial" state and memory
-         next = f_next(*([next_w, ctx0] + [next_state] + [next_memory]))
-         next_p = next[0]
-         next_w = next[1]
+         # next = f_next(*([next_w, ctx0] + [next_state] + [next_memory]))
+         # next_p = next[0]
+         # next_w = next[1]
+         next_results = f_next(*([next_w, ctx0] + [next_state] + [next_memory]))
+         next_p = next_results['probs']
+         next_w = next_results['sample']
 
          # extract all the states and memories
-         next_state = next[2]
-         next_memory = next[3]
+         next_state = next_results['state'] #next[2]
+         next_memory = next_results['memory'] #next[3]
 
          cand_scores = prev_scores[:, None] - numpy.log(next_p)
          cand_flat = cand_scores.flatten()
@@ -348,7 +356,7 @@ class Model:
          x, mask, ctx = prepare_data([data[0][t] for t in index], data[1],
                                      worddict, maxlen=None, n_words=options['n_words'])
 
-         pred_probs = f_probs(x, mask, ctx)
+         pred_probs = f_probs(x, mask, ctx)['pred_probs']
          probs[index] = pred_probs[:, None]
 
       return probs
@@ -415,7 +423,7 @@ class Model:
       f_init, f_next = self.nn_network.infer()
 
       # we want the cost without any the regularizers
-      f_probs = theano.function(inps, -cost, profile=False, updates=None)
+      f_probs = TFW(inps, {'pred_probs':-cost}, profile=False, updates=None)
 
       self.__cost = cost.mean()
 

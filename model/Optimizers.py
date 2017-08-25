@@ -1,5 +1,6 @@
 import theano
 import theano.tensor as tensor
+from utils import TheanoFunctionWrapper as TFW
 
 import numpy
 
@@ -34,8 +35,8 @@ class Optimizer(object):
 	def minimize(self, input, loss):
 		self.grads = self.compute_gradients(loss)
 		# computes costs and learning rates
-		f_grad=theano.function(input, loss, updates=self.get_grad_update_function(), profile=False)
-		f_update=theano.function([self.learning_rate],[], updates=self.get_grad_apply_function(), on_unused_input='ignore')
+		f_grad=TFW(input, loss, updates=self.get_grad_update_function(), profile=False)
+		f_update=TFW([self.learning_rate],[], updates=self.get_grad_apply_function(), on_unused_input='ignore')
 
 		return f_grad, f_update
 
