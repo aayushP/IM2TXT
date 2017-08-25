@@ -1,6 +1,9 @@
 import cPickle as pkl
 import numpy
 import copy
+
+import theano
+
 from collections import OrderedDict
 import sys
 sys.path.insert(0,'data/')
@@ -173,3 +176,27 @@ class HomogeneousData():
 
     def __iter__(self):
         return self
+
+
+class TheanoFunctionWrapper():
+    def __init__(self, input_variables, output_variables, **kwargs):
+        if isinstance(output_variables, dict):
+            outputs = []
+            self.__output_dict = {}
+            for k, v in dict.iteritems():
+                outputs.append(v)
+                self.__output_dict[k] = None
+        else:
+            outputs = output_variables
+
+        self.theano_function = theano.function(input_variables, outputs, **kwargs)
+
+    def __call__(self, inputs):
+        self.theano_results = self.theano_function(inputs)
+        if (self.__output_dict):
+            for index, key in enumerate(self.output_dict.iteritems()):
+                self.__output_dict[key] = self.theano_results[index]
+            return self.__output_dict
+        else:
+            return self.theano_results
+
