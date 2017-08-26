@@ -183,7 +183,7 @@ class TheanoFunctionWrapper():
         if isinstance(output_variables, dict):
             outputs = []
             self.__output_dict = {}
-            for k, v in dict.iteritems():
+            for k, v in output_variables.iteritems():
                 outputs.append(v)
                 self.__output_dict[k] = None
         else:
