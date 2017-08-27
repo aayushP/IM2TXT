@@ -191,8 +191,8 @@ class TheanoFunctionWrapper():
 
         self.theano_function = theano.function(input_variables, outputs, **kwargs)
 
-    def __call__(self, inputs):
-        self.theano_results = self.theano_function(inputs)
+    def __call__(self, **inputs):
+        self.theano_results = self.theano_function(**inputs)
         if (self.__output_dict):
             for index, key in enumerate(self.output_dict.iteritems()):
                 self.__output_dict[key] = self.theano_results[index]
