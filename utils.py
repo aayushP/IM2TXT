@@ -181,11 +181,13 @@ class HomogeneousData():
 class TheanoFunctionWrapper():
     def __init__(self, input_variables, output_variables, **kwargs):
         self.__output_dict = None
+        self.__map_index_to_key = []
 
         if isinstance(output_variables, dict):
             outputs = []
             self.__output_dict = {}
             for k, v in output_variables.iteritems():
+                self.__map_index_to_key.append(k)
                 outputs.append(v)
                 self.__output_dict[k] = None
         else:
@@ -196,8 +198,9 @@ class TheanoFunctionWrapper():
     def __call__(self, *inputs, **kwargs):
         self.theano_results = self.theano_function(*inputs, **kwargs)
         if self.__output_dict is not None:
-            for index, key in enumerate(self.__output_dict.iteritems()):
-                self.__output_dict[key] = self.theano_results[index]
+            for i in range(0, len(self.theano_results)):
+                self.__output_dict[self.__map_index_to_key[i]] = self.theano_results[i]
+
             return self.__output_dict
         else:
             return self.theano_results
