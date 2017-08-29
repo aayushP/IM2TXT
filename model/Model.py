@@ -126,7 +126,7 @@ class Trainer:
 
          # the model with the best validation long likelihood is saved seperately with a different name
          if self.update_index == 0 or valid_err <= numpy.array(self.history_errs)[:, 0].min():
-            self.best_p = utils.getNNParams(self.nn_params)
+            self.best_p = utils.get_nn_params(self.nn_params)
 
             print 'Saving model with best validation ll'
             self.save_network(name='_bestll',best_p=self.best_p,update_index=self.update_index,history_errs=self.history_errs)
@@ -410,7 +410,7 @@ class Model:
          if best_p is not None:
             params = copy(best_p)
          else:
-            params = utils.getNNParams(self.nn_network.params())
+            params = utils.get_nn_params(self.nn_network.params())
          numpy.savez(self.__options['saveto'] +name, history_errs=history_errs, **params)
          pkl.dump(self.__options, open('%s.pkl' % self.__options['saveto'], 'wb'))
          print 'Done'
@@ -469,16 +469,21 @@ class Model:
 
       trainer.run()
 
-   def infer(self, config_path, path, image_files):
+   def infer(self, path, feat_maps):
 
       self.build_network()
       f_init, f_next = self.nn_network.infer()
 
       nn_params = self.nn_network.params()
       params = numpy.load(path+'caption_model_bestll.npz')
-      utils.setNNParams(params, nn_params)
+      utils.set_nn_params(params, nn_params)
 
-      feat_maps = utils.get_feature_maps(config_path, image_files)
+      word_idict = dict()
+      for kk, vv in self.__worddict.iteritems():
+         word_idict[vv] = kk
+         word_idict[0] = '<eos>'
+         word_idict[1] = 'UNK'
+
       for ctx_s in feat_maps:
          ctx_s = ctx_s.reshape(196, 512)
          sample, score = self.generate_sample(f_init, f_next, ctx_s, self.__options, k=5, maxlen=30)
@@ -488,7 +493,8 @@ class Model:
             for vv in ss:
                if vv == 0:
                   break
-               if vv in self.__worddict:
-                  print self.__worddict[vv],
+               if vv in word_idict:
+                  print word_idict[vv],
                else:
                   print 'UNK',
+         print

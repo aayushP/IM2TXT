@@ -183,8 +183,8 @@ class LSTMLayer:
 
       # hidden activation of LSTM h_t is a linear projection of
       # the stochastic context vector z_t followed by tanh non-linearity
-      pctx_ = tensor.dot(context, self.Wc_att ) + self.b_att
-      pctx_ = tensor.dot(pctx_, self.W_att_1+self.b_att_1 )
+      pctx_ = tensor.dot(context, self.Wc_att) + self.b_att
+      pctx_ = tensor.dot(pctx_, self.W_att_1) + self.b_att_1
       pctx_ = tensor.tanh(pctx_)
 
       # embedding is timesteps*num samples by d in training Ey_t-1
@@ -207,7 +207,7 @@ class LSTMLayer:
          seqs = [mask, embedding]
 
          outputs_info = [init_state, init_memory,
-                        tensor.alloc(0., batch_size, pctx_.shape[1]), #a_ alpha
+                        tensor.alloc(0., batch_size, pctx_.shape[1]), #alpha
                         tensor.alloc(0., batch_size, context.shape[2])]  #ctx_
 
          #_step 0 function argument is concatenation of seqs, 3 arguments from output_info and non_sequences in that order

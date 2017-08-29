@@ -6,6 +6,7 @@ import argparse
 from model.Model import Model
 import DataLoader
 import glob
+from data_generation import get_feature_maps
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--attn_type",  default="deterministic",
@@ -65,10 +66,9 @@ def main(options):
    model_path ='./'
    config_path='data/'
 
-   model.infer(config_path, model_path,image_files)
+   feat_maps = get_feature_maps(config_path, image_files)
+   model.infer(model_path, feat_maps)
 
-   #_, validerr, _ = model.train(options)
-   #print "Final cost: {:.2f}".format(validerr.mean())
 
 if __name__ == "__main__":
     defaults = {}

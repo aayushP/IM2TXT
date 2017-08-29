@@ -8,8 +8,6 @@ from collections import OrderedDict
 import sys
 sys.path.insert(0,'data/')
 
-from data_generation import load_config, build_graph, load_images
-
 def ortho_weight(ndim):
     """
     Random orthogonal weights
@@ -41,12 +39,6 @@ def slice(_x, n, dim):
         return _x[:, :, n * dim:(n + 1) * dim]
     return _x[:, n * dim:(n + 1) * dim]
 
-def get_feature_maps(config_path, image_files):
-    _, _, vgg19_model_path, _, _, _, _, _ = load_config(config_path)
-
-    vgg, pl_images = build_graph(vgg19_model_path)
-
-    return load_images(image_files, vgg, pl_images)
 
 def extract_input(caps, features, worddict, maxlen=None, n_words=10000, zero_pad=False):
     # x: a list of sentences
@@ -98,11 +90,11 @@ def extract_input(caps, features, worddict, maxlen=None, n_words=10000, zero_pad
     return x, x_mask, y
 
 # push parameters to Theano shared variables
-def setNNParams(params, nn_params):
+def set_nn_params(params, nn_params):
     for nn_p in nn_params:
         nn_p.set_value(params[nn_p.name])
 
-def getNNParams(nn_params):
+def get_nn_params(nn_params):
     params = OrderedDict()
     for nn_p in nn_params:
         params[nn_p.name] = nn_p.get_value()
