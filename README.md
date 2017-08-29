@@ -30,10 +30,15 @@ After Anaconda is installed, run
 
 ### Results
 ![A group of people stand together .](https://github.com/aayushP/IM2TXT/blob/master/demo/146098876_0d99d7fb98.jpg)
+A group of people stand together.
+
 
 ![A girl is in a field .](https://github.com/aayushP/IM2TXT/blob/master/demo/174466741_329a52b2fe.jpg)
+A girl is in a field.
+
 
 ![Dog running in field](https://github.com/aayushP/IM2TXT/blob/master/demo/240696675_7d05193aa0.jpg)
+Dog running in field
 
 
 
