@@ -1,0 +1,19 @@
+{
+   "vgg19_path" : "data/vgg19.npy",
+   "current_dataset" : "flickr8k",
+
+   "_comment_dataset" : "Data set used for generating pkl files -- ",
+   "flickr8k":
+     {
+       "total_size":8000,
+       "training_size":5000,
+       "test_size":2000,
+       "paths":
+         {
+           "annotations":"../../data/flickr8k/Flickr8k.token.txt",
+           "images":"../../data/Flickr8k_Dataset",
+           "pkl_output": "../../data/flickr8k/out_pickles"
+         }
+     }
+
+}
